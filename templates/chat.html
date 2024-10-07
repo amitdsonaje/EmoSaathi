@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/chat.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">EMOSAATHI</div>
+        <div class="chat-box">
+            {% for message in conversation_history %}
+                <div class="chat-message {{ message.role }}">
+                    <strong>{{ message.role.capitalize() }}:</strong> {{ message.content }}
+                </div>
+            {% endfor %}
+        </div>
+        <form method="POST" class="chat-input-container">
+            {% if not conversation_history %}
+                <input type="text" name="initial_input" placeholder="Start the conversation..." required>
+                <button type="submit" name="start_conversation">Start</button>
+            {% else %}
+                <input type="text" name="user_input" placeholder="Continue the conversation..." required>
+                <button type="submit" name="continue_conversation">Send</button>
+            {% endif %}
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capture Photo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/capture.css') }}">
+    <script src="{{ url_for('static', filename='js/capture.js') }}"></script>
+</head>
+
+<body>
+    <div>EMOSAATHI AI</div>
+    <h3>Capture Photo</h3>
+    <video id="video" width="640" height="480" autoplay style="display: none;"></video>
+    <button id="open-camera">Open Camera</button>
+    <button id="capture" disabled>Capture Photo</button>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <script>
+        const openCameraBtn = document.getElementById('open-camera');
+        const captureBtn = document.getElementById('capture');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+
+        openCameraBtn.addEventListener('click', async function () {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                video.style.display = 'block';
+                captureBtn.disabled = false;
+                openCameraBtn.disabled = true; // Disable the "Open Camera" button once the camera is open
+            } catch (error) {
+                alert("Unable to access the camera. Please check if it is connected and enabled.");
+            }
+        });
+
+        captureBtn.addEventListener('click', async function () {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const image = canvas.toDataURL('image/png');
+            const response = await fetch('/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ image: image }),
+            });
+
+            if (response.ok) {
+                window.location.href = "/chat";
+            }
+        });
+    </script>
+</body>
+
+</html>
